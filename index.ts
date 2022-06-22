@@ -7,7 +7,10 @@ const app = express()
 const port = process.env.PORT || 5000
 
 app.get('/', (req, res) => {
-  console.log('Endpoint called')
+  res.status(200).json('Hello world :)')
+})
+
+app.post('/', (req, res) => {
   res.status(200).end()
 })
 
