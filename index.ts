@@ -1,6 +1,7 @@
 import express from 'express'
 import { config } from 'dotenv'
 import { HmacSHA256 } from 'crypto-js'
+import Base64 from 'crypto-js/enc-base64'
 
 config()
 
@@ -28,7 +29,7 @@ app.post('/', (req, res) => {
 
   console.log(headers['x-discourse-event-signature'])
   console.log(hash)
-  console.log(`sha256=${hmac.toString()}`)
+  console.log(`sha256=${Base64.stringify(hmac)}`)
 
   res.status(200).end()
 })
