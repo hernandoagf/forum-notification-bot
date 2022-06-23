@@ -1,7 +1,10 @@
 import express from 'express'
 import { config } from 'dotenv'
+import { HmacSHA256 } from 'crypto-js'
 
 config()
+
+const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET || ''
 
 const app = express()
 app.use(express.json())
@@ -12,7 +15,18 @@ app.get('/', (req, res) => {
 })
 
 app.post('/', (req, res) => {
-  console.log(req.body)
+  const body = req.body
+  const headers = req.headers
+
+  if (!headers['x-discourse-event-signature']) {
+    res.status(400).end()
+    return
+  }
+
+  const hmac = HmacSHA256(JSON.stringify(body), WEBHOOK_SECRET)
+  const hash = `sha256=${hmac}`
+  console.log(hash)
+
   res.status(200).end()
 })
 
