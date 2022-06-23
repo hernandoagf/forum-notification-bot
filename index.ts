@@ -29,7 +29,7 @@ app.post('/', (req, res) => {
 
   console.log(headers['x-discourse-event-signature'])
   console.log(hash)
-  console.log(`sha256=${Base64.stringify(hmac)}`)
+  console.log(JSON.stringify(body))
 
   res.status(200).end()
 })
