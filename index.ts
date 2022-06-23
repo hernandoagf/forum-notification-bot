@@ -1,6 +1,7 @@
 import express from 'express'
 import { config } from 'dotenv'
 import { HmacSHA256 } from 'crypto-js'
+import axios from 'axios'
 
 import { HIGH_IMPACT, MEDIUM_IMPACT } from './constant'
 
@@ -14,10 +15,6 @@ const DISCOURSE_API_USERNAME = process.env.DISCOURSE_API_USERNAME || ''
 const app = express()
 app.use(express.json())
 const port = process.env.PORT || 5000
-
-app.get('/', (req, res) => {
-  res.status(200).json('Hello world :)')
-})
 
 app.post('/', async (req, res) => {
   const body = req.body
@@ -34,9 +31,6 @@ app.post('/', async (req, res) => {
   const hmac = HmacSHA256(JSON.stringify(body), WEBHOOK_SECRET)
   const hash = `sha256=${hmac}`
 
-  console.log(headerHash)
-  console.log(hash)
-
   if (hash !== headerHash) {
     res.status(403).end()
     return
@@ -49,16 +43,20 @@ app.post('/', async (req, res) => {
 
   // Check if webhook is of interest
   if (eventType === 'topic_created') {
-    await fetch(DISCOURSE_URL + '/posts.json', {
-      headers: {
-        'Api-Key': DISCOURSE_API_KEY,
-        'Api-Username': DISCOURSE_API_USERNAME,
-      },
-      body: JSON.stringify({
+    await axios.post(
+      DISCOURSE_URL + '/posts.json',
+      {
         topic_id: body.topic.id,
         raw: 'Attention @impact-alerts this proposal has been given an Impact tag, please consider reviewing it.',
-      }),
-    })
+      },
+      {
+        headers: {
+          'Api-Key': DISCOURSE_API_KEY,
+          'Api-Username': DISCOURSE_API_USERNAME,
+        },
+      }
+    )
+
     res.status(200).end()
     return
   }
