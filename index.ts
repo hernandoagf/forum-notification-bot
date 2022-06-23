@@ -25,7 +25,10 @@ app.post('/', (req, res) => {
 
   const hmac = HmacSHA256(JSON.stringify(body), WEBHOOK_SECRET)
   const hash = `sha256=${hmac}`
+
+  console.log(headers['x-discourse-event-signature'])
   console.log(hash)
+  console.log(`sha256=${hmac.toString()}`)
 
   res.status(200).end()
 })
