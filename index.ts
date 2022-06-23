@@ -16,6 +16,8 @@ app.post('/', (req, res) => {
   console.log(req.body)
   console.log(req.payload)
   console.log(req.Payload)
+  console.log(req.data)
+  console.log(req.formData)
   res.status(200).end()
 })
 
