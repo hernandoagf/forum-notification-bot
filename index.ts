@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 import { HmacSHA256 } from 'crypto-js'
 
 import { HIGH_IMPACT } from './constant'
-import { forumAxios } from './config'
+import { authAxios, unAuthAxios } from './config'
 
 config()
 
@@ -27,12 +27,12 @@ app.post('/', async (req, res) => {
   // Perform security verifications
   if (!headerHash) res.status(400).end()
   else if (hash !== headerHash) res.status(403).end()
-  else if (!forumAxios) res.status(200).end()
+  else if (!authAxios) res.status(200).end()
   // Check if webhook is of interest
   else if (eventType === 'topic_created')
     await postReply(body.topic.id, impactType)
   else if (eventType === 'topic_edited') {
-    const topicRes = await forumAxios.get(`/t/${body.topic.id}.json`)
+    const topicRes = await unAuthAxios.get(`/t/${body.topic.id}.json`)
     const topicData = topicRes.data
     const latestsBotReply = topicData.post_stream.posts
       .reverse()
@@ -63,13 +63,13 @@ app.post('/', async (req, res) => {
 })
 
 const postReply = async (topic_id: number, impactType: string) =>
-  await forumAxios?.post('/posts.json', {
+  await authAxios?.post('/posts.json', {
     topic_id,
     raw: `Attention @impact-alerts this proposal has been given a ${impactType} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
   })
 
 const editReply = async (post_id: number, impactType: string) =>
-  await forumAxios?.put(`/posts/${post_id}.json`, {
+  await authAxios?.put(`/posts/${post_id}.json`, {
     edit_reason: 'Impact tag changed',
     raw: `Attention @impact-alerts this proposal has been given a ${impactType} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
   })
