@@ -43,11 +43,13 @@ app.post('/', async (req, res) => {
 
   // Check if webhook is of interest
   if (eventType === 'topic_created') {
+    const impactType = body.topic.tags.includes(HIGH_IMPACT) ? 'High' : 'Medium'
+
     await axios.post(
       DISCOURSE_URL + '/posts.json',
       {
         topic_id: body.topic.id,
-        raw: 'Attention @impact-alerts this proposal has been given an Impact tag, please consider reviewing it.',
+        raw: `Attention @impact-alerts this proposal has been given a ${impactType} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
       },
       {
         headers: {
@@ -56,8 +58,6 @@ app.post('/', async (req, res) => {
         },
       }
     )
-
-    // Push topic ID to DB
 
     res.status(200).end()
     return
@@ -82,11 +82,13 @@ app.post('/', async (req, res) => {
     )
 
     if (!impactTagsBefore && impactTagsNow) {
+      const impactType = currentTags.includes(HIGH_IMPACT) ? 'High' : 'Medium'
+
       await axios.post(
         DISCOURSE_URL + '/posts.json',
         {
           topic_id: body.topic.id,
-          raw: 'Attention @impact-alerts this proposal has been given an Impact tag, please consider reviewing it.',
+          raw: `Attention @impact-alerts this proposal has been given a ${impactType} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
         },
         {
           headers: {
@@ -96,7 +98,11 @@ app.post('/', async (req, res) => {
         }
       )
 
-      // Push topic ID to DB
+      // Push topic ID to DB - I think a better solution would be to check if the topic has already been replied by the bot
+      // Add a small delay and then fetch latest state for the topic, so people have time to fix mistakes
+      // Maybe instead of a delay we can fetch the last 2 topic edits and compare the time interval between them
+
+      // -- 1 hour delay --
     }
 
     res.status(200).end()
