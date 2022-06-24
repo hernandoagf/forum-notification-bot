@@ -2,7 +2,12 @@ import express from 'express'
 import { config } from 'dotenv'
 import { HmacSHA256 } from 'crypto-js'
 
-import { HIGH_IMPACT } from './constant'
+import {
+  HIGH_IMPACT,
+  regularReplyText,
+  increasedImpactReplyText,
+} from './constant'
+import { postReply, editReply } from './helpers'
 import { authAxios, unAuthAxios } from './config'
 
 config()
@@ -30,7 +35,7 @@ app.post('/', async (req, res) => {
   else if (!authAxios) res.status(200).end()
   // Check if webhook is of interest
   else if (eventType === 'topic_created')
-    await postReply(body.topic.id, impactType)
+    await postReply(body.topic.id, regularReplyText(impactType))
   else if (eventType === 'topic_edited') {
     const topicRes = await unAuthAxios.get(`/t/${body.topic.id}.json`)
     const topicData = topicRes.data
@@ -38,7 +43,8 @@ app.post('/', async (req, res) => {
       .reverse()
       .find((post: any) => post.username === DISCOURSE_API_USERNAME)
 
-    if (!latestsBotReply) await postReply(body.topic.id, impactType)
+    if (!latestsBotReply)
+      await postReply(body.topic.id, regularReplyText(impactType))
     else {
       const replyImpactType = latestsBotReply.cooked.includes('High Impact tag')
         ? 'High'
@@ -46,14 +52,14 @@ app.post('/', async (req, res) => {
 
       if (impactType !== replyImpactType) {
         if (impactType === 'Medium')
-          await editReply(latestsBotReply.id, impactType)
+          await editReply(latestsBotReply.id, regularReplyText(impactType))
         else {
           const timeDiff =
             Date.now() - new Date(latestsBotReply.updated_at).getTime()
-
-          if (timeDiff < 1000 * 60 * 60)
-            await editReply(latestsBotReply.id, impactType)
-          else await postReply(body.topic.id, impactType)
+          // Change this to 1 hour after tests end (1000 * 60 * 60)
+          if (timeDiff < 1000 * 60 * 5)
+            await editReply(latestsBotReply.id, regularReplyText(impactType))
+          else await postReply(body.topic.id, increasedImpactReplyText)
         }
       }
     }
@@ -61,18 +67,6 @@ app.post('/', async (req, res) => {
 
   res.status(200).end()
 })
-
-const postReply = async (topic_id: number, impactType: string) =>
-  await authAxios?.post('/posts.json', {
-    topic_id,
-    raw: `Attention @impact-alerts this proposal has been given a ${impactType} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
-  })
-
-const editReply = async (post_id: number, impactType: string) =>
-  await authAxios?.put(`/posts/${post_id}.json`, {
-    edit_reason: 'Impact tag changed',
-    raw: `Attention @impact-alerts this proposal has been given a ${impactType} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
-  })
 
 app.listen(port, () =>
   console.log(`⚡️[server]: Server is running on port ${port}...`)
