@@ -1,4 +1,7 @@
-import { authAxios } from './config'
+import { authAxios, discordAxios } from './config'
+import { discordEmbed } from './constant'
+
+const CHANNEL_ID = process.env.CHANNEL_ID || ''
 
 export const postReply = async (topic_id: number, raw: string) =>
   await authAxios?.post('/posts.json', {
@@ -11,3 +14,13 @@ export const editReply = async (post_id: number, raw: string) =>
     edit_reason: 'Impact tag changed',
     raw,
   })
+
+export const postDiscordMessage = async (
+  title: string,
+  impact: string,
+  id: number
+) => {
+  await discordAxios?.post(`/channels/${CHANNEL_ID}/messages`, {
+    embeds: [discordEmbed(title, impact, id)],
+  })
+}

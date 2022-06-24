@@ -7,7 +7,7 @@ import {
   regularReplyText,
   increasedImpactReplyText,
 } from './constant'
-import { postReply, editReply } from './helpers'
+import { postReply, editReply, postDiscordMessage } from './helpers'
 import { authAxios, unAuthAxios } from './config'
 
 config()
@@ -34,9 +34,10 @@ app.post('/', async (req, res) => {
   else if (hash !== headerHash) res.status(403).end()
   else if (!authAxios) res.status(200).end()
   // Check if webhook is of interest
-  else if (eventType === 'topic_created')
+  else if (eventType === 'topic_created') {
     await postReply(body.topic.id, regularReplyText(impactType))
-  else if (eventType === 'topic_edited') {
+    await postDiscordMessage(body.topic.title, impactType, body.topic.id)
+  } else if (eventType === 'topic_edited') {
     const topicRes = await unAuthAxios.get(`/t/${body.topic.id}.json`)
     const topicData = topicRes.data
     const latestsBotReply = topicData.post_stream.posts
@@ -56,8 +57,8 @@ app.post('/', async (req, res) => {
         else {
           const timeDiff =
             Date.now() - new Date(latestsBotReply.updated_at).getTime()
-          // Change this to 1 hour after tests end (1000 * 60 * 60)
-          if (timeDiff < 1000 * 60 * 5)
+
+          if (timeDiff < 1000 * 60 * 60)
             await editReply(latestsBotReply.id, regularReplyText(impactType))
           else await postReply(body.topic.id, increasedImpactReplyText)
         }
