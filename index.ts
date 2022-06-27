@@ -44,9 +44,10 @@ app.post('/', async (req, res) => {
       .reverse()
       .find((post: any) => post.username === DISCOURSE_API_USERNAME)
 
-    if (!latestsBotReply)
+    if (!latestsBotReply) {
       await postReply(body.topic.id, regularReplyText(impactType))
-    else {
+      await postDiscordMessage(body.topic.title, impactType, body.topic.id)
+    } else {
       const replyImpactType = latestsBotReply.cooked.includes('High Impact tag')
         ? 'High'
         : 'Medium'
