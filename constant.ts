@@ -10,5 +10,5 @@ export const discordEmbed = (title: string, impact: string, id: number) => ({
   title,
   description: `Attention <@${DISCORD_ROLE_ID}> this proposal has been given a ${impact} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
   url: `${DISCOURSE_URL}/t/${id}`,
-  color: 0x1aab9b,
+  color: parseInt(0x1aab9b, 16),
 })
