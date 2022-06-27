@@ -19,10 +19,11 @@ export const editReply = async (post_id: number, raw: string) =>
 export const postDiscordMessage = async (
   title: string,
   impact: string,
-  id: number
+  id: number,
+  upgraded: boolean = false
 ) => {
   await discordAxios?.post(`/channels/${CHANNEL_ID}/messages`, {
     content: `<@&${DISCORD_ROLE_ID}>`,
-    embeds: [discordEmbed(title, impact, id)],
+    embeds: [discordEmbed(title, impact, id, upgraded)],
   })
 }

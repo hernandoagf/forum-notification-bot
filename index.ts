@@ -61,7 +61,15 @@ app.post('/', async (req, res) => {
 
           if (timeDiff < 1000 * 60 * 60)
             await editReply(latestsBotReply.id, regularReplyText(impactType))
-          else await postReply(body.topic.id, increasedImpactReplyText)
+          else {
+            await postReply(body.topic.id, increasedImpactReplyText)
+            await postDiscordMessage(
+              body.topic.title,
+              impactType,
+              body.topic.id,
+              true
+            )
+          }
         }
       }
     }
