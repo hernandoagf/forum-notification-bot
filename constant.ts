@@ -8,7 +8,7 @@ export const regularReplyText = (impactType: string) =>
 export const increasedImpactReplyText = `Attention @impact-alerts this proposal has been upgraded from Medium Impact to High Impact, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`
 export const discordEmbed = (title: string, impact: string, id: number) => ({
   title,
-  description: `Attention <@${DISCORD_ROLE_ID}> this proposal has been given a ${impact} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
+  description: `Attention <@&${DISCORD_ROLE_ID}> this proposal has been given a ${impact} Impact tag, please consider reviewing it.\n\nIf you would like to sign up for impact alerts, please follow these [instructions](https://forum.makerdao.com)`,
   url: `${DISCOURSE_URL}/t/${id}`,
-  color: parseInt(0x1aab9b, 16),
+  color: parseInt('0x1aab9b', 16),
 })
