@@ -42,6 +42,10 @@ export const findDiscordMessage = async (
   const discordRes = await discordAxios?.get(`/channels/${CHANNEL_ID}/messages`)
   const discordData = discordRes?.data
 
+  console.log(topicId)
+
+  discordData.forEach((d: any) => console.log(d.embeds[0]?.url, d.content))
+
   const foundMessage = discordData.find(
     (message: any) =>
       message.embeds[0]?.url.split('/').at(-1) === topicId &&
