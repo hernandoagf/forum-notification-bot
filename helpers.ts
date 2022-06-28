@@ -43,7 +43,9 @@ export const findDiscordMessage = async (
   const discordData = discordRes?.data
 
   const foundMessage = discordData.find(
-    (message: any) => message.embeds[0]?.url.split('/').at(-1) === topicId
+    (message: any) =>
+      message.embeds[0]?.url.split('/').at(-1) === topicId &&
+      message.content === `<@&${DISCORD_ROLE_ID}>`
   )
 
   if (!foundMessage) return
