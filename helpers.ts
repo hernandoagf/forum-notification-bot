@@ -42,7 +42,7 @@ export const findDiscordMessage = async (
   const discordRes = await discordAxios?.get(`/channels/${CHANNEL_ID}/messages`)
   const discordData = discordRes?.data
 
-  console.log(topicId)
+  console.log(typeof topicId)
 
   const test = discordData.filter(
     (d: any) =>
