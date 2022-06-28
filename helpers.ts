@@ -48,6 +48,8 @@ export const findDiscordMessage = async (
       message.content === `<@&${DISCORD_ROLE_ID}>`
   )
 
+  console.log(foundMessage)
+
   if (!foundMessage) return
 
   return foundMessage.id
