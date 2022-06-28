@@ -44,7 +44,7 @@ export const findDiscordMessage = async (
 
   const foundMessage = discordData.find(
     (message: any) =>
-      message.embeds[0]?.url.split('/').at(-1) === topicId.toString() &&
+      message.embeds[0]?.url?.split('/').at(-1) === topicId.toString() &&
       message.content === `<@&${DISCORD_ROLE_ID}>`
   )
 
