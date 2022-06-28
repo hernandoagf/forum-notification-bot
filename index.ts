@@ -7,7 +7,13 @@ import {
   regularReplyText,
   increasedImpactReplyText,
 } from './constant'
-import { postReply, editReply, postDiscordMessage } from './helpers'
+import {
+  postReply,
+  editReply,
+  postDiscordMessage,
+  findDiscordMessage,
+  editDiscordMessage,
+} from './helpers'
 import { authAxios, unAuthAxios } from './config'
 
 config()
@@ -53,15 +59,31 @@ app.post('/', async (req, res) => {
         : 'Medium'
 
       if (impactType !== replyImpactType) {
-        if (impactType === 'Medium')
+        if (impactType === 'Medium') {
           await editReply(latestsBotReply.id, regularReplyText(impactType))
-        else {
+          const discordMessageId = await findDiscordMessage(body.topic.id)
+          if (discordMessageId)
+            await editDiscordMessage(
+              discordMessageId,
+              body.topic.title,
+              impactType,
+              body.topic.id
+            )
+        } else {
           const timeDiff =
             Date.now() - new Date(latestsBotReply.updated_at).getTime()
 
-          if (timeDiff < 1000 * 60 * 60)
+          if (timeDiff < 1000 * 60 * 60) {
             await editReply(latestsBotReply.id, regularReplyText(impactType))
-          else {
+            const discordMessageId = await findDiscordMessage(body.topic.id)
+            if (discordMessageId)
+              await editDiscordMessage(
+                discordMessageId,
+                body.topic.title,
+                impactType,
+                body.topic.id
+              )
+          } else {
             await postReply(body.topic.id, increasedImpactReplyText)
             await postDiscordMessage(
               body.topic.title,
