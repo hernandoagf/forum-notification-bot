@@ -1,7 +1,7 @@
 {
-  "name": "forum-notification-bot",
+  "name": "forum-proposal-notification-bot",
   "version": "1.0.0",
-  "description": "A bot to send notifications to Discourse, Discord and through Email",
+  "description": "A bot to post Proposal notifications on Discourse, Discord and through Email",
   "main": "index.ts",
   "scripts": {
     "build": "npx tsc",
@@ -9,7 +9,7 @@
     "dev": "ts-node-dev --watch --respawn --transpile-only index.ts"
   },
   "author": "hernandoagf",
-  "license": "MIT",
+  "license": "APGL-3.0",
   "dependencies": {
     "axios": "^0.27.2",
     "crypto-js": "^4.1.1",
