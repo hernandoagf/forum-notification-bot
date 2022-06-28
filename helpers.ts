@@ -37,27 +37,16 @@ export const postDiscordMessage = async (
 }
 
 export const findDiscordMessage = async (
-  topicId: string
+  topicId: number
 ): Promise<string | undefined> => {
   const discordRes = await discordAxios?.get(`/channels/${CHANNEL_ID}/messages`)
   const discordData = discordRes?.data
 
-  console.log(typeof topicId)
-
-  const test = discordData.filter(
-    (d: any) =>
-      d.embeds[0]?.url === 'https://staging-forum.makerfoundation.com/t/113'
-  )
-
-  console.log(test)
-
   const foundMessage = discordData.find(
     (message: any) =>
-      message.embeds[0]?.url.split('/').at(-1) === topicId &&
+      message.embeds[0]?.url.split('/').at(-1) === topicId.toString() &&
       message.content === `<@&${DISCORD_ROLE_ID}>`
   )
-
-  console.log(foundMessage)
 
   if (!foundMessage) return
 
