@@ -44,7 +44,12 @@ export const findDiscordMessage = async (
 
   console.log(topicId)
 
-  discordData.forEach((d: any) => console.log(d.embeds[0]?.url, d.content))
+  const test = discordData.filter(
+    (d: any) =>
+      d.embeds[0]?.url === 'https://staging-forum.makerfoundation.com/t/113'
+  )
+
+  console.log(test)
 
   const foundMessage = discordData.find(
     (message: any) =>
