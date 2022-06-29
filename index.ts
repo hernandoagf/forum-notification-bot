@@ -28,7 +28,7 @@ const port = process.env.PORT || 5000
 app.post('/', async (req, res) => {
   const body = req.body
   if (body.ping) {
-    res.status(200).end()
+    res.status(200).json({ msg: 'Breaking first' }).end()
     return
   }
   const headers = req.headers
@@ -42,7 +42,7 @@ app.post('/', async (req, res) => {
   // Perform security verifications
   if (!headerHash) res.status(400).end()
   else if (hash !== headerHash) res.status(403).end()
-  else if (!authAxios) res.status(200).end()
+  else if (!authAxios) res.status(200).json({ msg: 'Breaking second' }).end()
   // Check if webhook is of interest
   else if (eventType === 'topic_created') {
     await postReply(body.topic.id, regularReplyText(impactType))
@@ -101,7 +101,7 @@ app.post('/', async (req, res) => {
     }
   }
 
-  res.status(200).end()
+  res.status(200).json({ msg: 'Breaking third' }).end()
 })
 
 app.listen(port, () =>
