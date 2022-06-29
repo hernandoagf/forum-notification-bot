@@ -27,10 +27,14 @@ const port = process.env.PORT || 5000
 
 app.post('/', async (req, res) => {
   const body = req.body
+  if (body.ping) {
+    res.status(200).end()
+    return
+  }
   const headers = req.headers
   const headerHash = headers['x-discourse-event-signature']
   const eventType = headers['x-discourse-event']
-  const impactType = body.topic.tags.includes(HIGH_IMPACT) ? 'High' : 'Medium'
+  const impactType = body.topic?.tags.includes(HIGH_IMPACT) ? 'High' : 'Medium'
 
   const hmac = HmacSHA256(JSON.stringify(body), WEBHOOK_SECRET)
   const hash = `sha256=${hmac}`
